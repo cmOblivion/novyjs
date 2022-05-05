@@ -1,3 +1,4 @@
-*_webpack.config.js
+*.config.js*
 node_modules/
 .npmignore
+devserver.js
