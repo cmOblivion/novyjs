@@ -5,7 +5,8 @@
 	"main": "dist/index.min.js",
 	"scripts": {
 		"build": "npx webpack -c build_webpack.config.js",
-		"make":"npx webpack -c release_webpack.config.js"
+		"make":"npx webpack -c release_webpack.config.js",
+		"push":"git push github master"
 	},
 	"repository": {
 		"type": "git",
