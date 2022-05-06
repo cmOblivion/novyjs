@@ -27,24 +27,31 @@ class NovyEvent {
 	 * 注册事件（也叫绑定）
 	 * 绑定时会触发bind事件，传入事件名和回调函数
 	 * @param {string} tag 事件名
-	 * @param {function} ...callbacks 回调函数
+	 * @param {function} callbacks 回调函数
 	 */
-	$on(tag,...callback){
+	$on(tag,callback){
 
 		// 如果没有分配uuid，就分配一个唯一的新的id
-		if(Reflect.has(callback,'#uuid')){
-			callback.uuid = this.#uuid();
+		if (Reflect.has(callback,'#uuid')) {
+			callback.$uuid = this.#uuid();
 		}
 
-		// 判断是否绑定过
-		if(this.$heard(tag)){
-			this.$events[tag] = this.$events[tag].c$oncat(callback);
-		} else {
-			this.$events[tag] = callback;
+		let tagList = tag.split('.');
+		let cache = this.$events;
+		for (let t of tagList) {
+			if (!Reflect.has(cache)) {
+				cache[t] = {
+					$cb:[],
+				};
+			}
+
+			cache = cache[t];
 		}
+
+		cache.$cb.push(callback);
 
 		// 触发绑定事件
-		if(tag!=='bind'){
+		if (tag!=='bind') {
 			this.$emit('bind',tag,callback);
 		}
 
@@ -56,62 +63,51 @@ class NovyEvent {
 	 * @param {string} tag 事件名
 	 * @param ...args 其余参数
 	 */
-	$emit(tag,...data){
-		if (this.$heard(tag)) {
-			for (let cb of this.$look(tag)) {
-				cb(...data);
+	$emit(tag,...args){
+		var tagList = tag.split('.');
+		let cache = this.$events;
+		for (let t of tagList) {
+			if (cache[t]) {
+				cache = cache[t];
 			}
 		}
 
-		// 这里可以让继承与此的类用$on...方法快捷绑定事件
-		let $onTag = `$on${tag}`;
-		if (Reflect.has(this,$onTag)) {
-			this[$onTag](...data);
+		if (Reflect.has(cache,'$cb')) {
+			for(let cb of cache.$cb) {
+				cb(...args);
+			}
 		}
 
 		return this;
 	}
 
 	/**
-	 * 返回某个事件的所有监听者
-	 */
-	$look(tag){
-		return this.$heard(tag) ? this.$events[tag] : [];
-	}
-
-	/**
 	 * 取消监听（绑定、注册）
-	 * 传参方式：
-	 * 一个事件名（删除所有这个事件的绑定）
-	 * 一个函数（删除所有这个函数的绑定）
-	 * 事件名加函数（推荐）（删除事件下函数的绑定）
 	 * @param {string} tag 事件名
 	 * @param {function} [callback] 回调函数
 	 */
-	$cancel(tag,func){
-	if(type.isFunction(tag) && func.uuid){
-		for(let i in this.$events){
-			for(let j in this.$events[i]){
-				if(this.$events[i][j].uuid === func.uuid){
-					delete this.$events[i][j];
-				}
+	$off(tag,func){
+		var tagList = tag.split('.');
+		let cache = this.$events;
+		for (let t of tagList) {
+			if (cache[t]) {
+				cache = cache[t];
 			}
 		}
-	} else if(type.isString(tag)) {
-		if(type.isFunction(func) && func.uuid){
-			for(let i in this.$events[tag]){
-				if(this.$events[tag][i].uuid === func.uuid){
-					delete this.$events[tag][i];
+
+		if (type.isFunction(func)) {
+			if (Reflect.has(cache,'$cb')) {
+				for (let i in cache.$cb) {
+					if (cache.$cb[i].$uuid === func.uuid) {
+						delete cache.$cb[i];
+					}
 				}
 			}
 		} else {
-			if(this.$heard(tag)){
-				delete this.$events[tag];
-			}
+			cache.$cb = [];
 		}
-	}
 
-	return this;
+		return this;
 	}
 }
 

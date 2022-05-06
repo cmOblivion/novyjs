@@ -4,12 +4,12 @@
 	"description": "A front-end javascript framework.",
 	"main": "dist/index.min.js",
 	"scripts": {
-		"build": "npx webpack -c build_webpack.config.js",
-		"make": "npx webpack -c release_webpack.config.js",
 		"push": "git push github master",
 		"commit": "git commit -m update",
 		"doc": "jsdoc -c docs.config.json",
-		"dev": "node devserver.js"
+		"dev": "node devserver.js",
+		"build":"rollup -c build_rollup.config.js",
+		"release":"rollup -c release_rollup.config.js"
 	},
 	"repository": {
 		"type": "git",
@@ -23,6 +23,6 @@
 	"homepage": "https://github.com/cmOblivion/novyjs#readme",
 	"devDependencies": {
 		"mirthjs": "^1.0.5",
-		"webpack-cli": "^4.9.2"
+		"rollup-plugin-terser": "^7.0.2"
 	}
 }

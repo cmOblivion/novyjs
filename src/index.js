@@ -11,5 +11,6 @@ import {NovyEvent} from './class/NovyEvent.js';
 	if (global.$) {
 		global.$ = Novy;
 	}
+	
 	global.Novy = Novy;
-})(globalThis)
+})(globalThis);

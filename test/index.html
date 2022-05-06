@@ -7,6 +7,11 @@
 	<title>Novy Test</title>
 </head>
 <body>
-
+	<h1 style="float: right;">nb!</h1>
+	<script defer>
+		var ee = new Novy.NovyEvent();
+		var r = () => console.log(1);
+		ee.$on('g',r);
+	</script>
 </body>
 </html>
