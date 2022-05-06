@@ -78,7 +78,7 @@
 			let tagList = tag.split('.');
 			let cache = this.$events;
 			for (let t of tagList) {
-				if (!Reflect.has(cache)) {
+				if (!Reflect.has(cache,t)) {
 					cache[t] = {
 						$cb:[],
 					};
@@ -89,12 +89,19 @@
 
 			cache.$cb.push(callback);
 
-			// 触发绑定事件
-			if (tag!=='bind') {
-				this.$emit('bind',tag,callback);
-			}
-
 			return this;
+		}
+
+		$$runCallback(ev,...args){
+			for (let i in ev) {
+				if (i==='$cb') {
+					for (let cb of ev.$cb) {
+						cb(...args);
+					}
+				} else {
+					this.$$runCallback(ev[i]);
+				}
+			}
 		}
 
 		/**
@@ -111,11 +118,7 @@
 				}
 			}
 
-			if (Reflect.has(cache,'$cb')) {
-				for(let cb of cache.$cb) {
-					cb(...args);
-				}
-			}
+			this.$$runCallback(cache,...args);
 
 			return this;
 		}
@@ -150,7 +153,44 @@
 		}
 	}
 
+	class VM extends NovyEvent {
+		constructor(){
+			super();
+
+			this.$lockFunc = null;
+		}
+
+		lock(func){
+			this.$lockFunc = func;
+		}
+
+		unlock(func){
+			this.$lockFunc = null;
+		}
+	}
+
+	function NovyVM(...data){
+		var ev = new VM();
+		Object.assign(ev,...data);
+
+		var proxy = new Proxy(ev,{
+			get(target,prop,receiver){
+				if (Reflect.get(target,'$lockFunc')) {
+					target.$on(`change.${prop}`,Reflect.get(target,'$lockFunc'));
+				}
+
+				return Reflect.get(target,prop,receiver);
+			},
+			set(target){
+
+			}
+		});
+
+		return proxy;
+	}
+
 	exports.NovyEvent = NovyEvent;
+	exports.NovyVM = NovyVM;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -53,14 +53,14 @@ class NovyEvent {
 		return this;
 	}
 
-	#runCallback(ev,...args){
+	$$runCallback(ev,...args){
 		for (let i in ev) {
 			if (i==='$cb') {
 				for (let cb of ev.$cb) {
 					cb(...args);
 				}
 			} else {
-				this.#runCallback(ev[i]);
+				this.$$runCallback(ev[i]);
 			}
 		}
 	}
@@ -79,7 +79,7 @@ class NovyEvent {
 			}
 		}
 
-		this.#runCallback(cache,...args);
+		this.$$runCallback(cache,...args);
 
 		return this;
 	}

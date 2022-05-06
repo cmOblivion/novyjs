@@ -10,13 +10,15 @@
 	<script type="module">
 		import * as Novy from '../src/index.js';
 
-		var ee = new Novy.NovyEvent();
-		var r = () => console.log(1);
-		ee.$on('g.e',r);
-		ee.$emit('g');
+		// var ee = new Novy.NovyEvent();
+		// var r = () => console.log(1);
+		// ee.$on('g.e',r);
+		// ee.$emit('g');
+		// globalThis.ee = ee;
+		// globalThis.r = r;
 
-		globalThis.ee = ee;
-		globalThis.r = r;
+		var t = Novy.NovyVM();
+		window.t = t;``
 	</script>
 </body>
 </html>
