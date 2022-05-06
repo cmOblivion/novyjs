@@ -39,7 +39,7 @@ class NovyEvent {
 		let tagList = tag.split('.');
 		let cache = this.$events;
 		for (let t of tagList) {
-			if (!Reflect.has(cache)) {
+			if (!Reflect.has(cache,t)) {
 				cache[t] = {
 					$cb:[],
 				};
@@ -50,12 +50,19 @@ class NovyEvent {
 
 		cache.$cb.push(callback);
 
-		// 触发绑定事件
-		if (tag!=='bind') {
-			this.$emit('bind',tag,callback);
-		}
-
 		return this;
+	}
+
+	#runCallback(ev,...args){
+		for (let i in ev) {
+			if (i==='$cb') {
+				for (let cb of ev.$cb) {
+					cb(...args);
+				}
+			} else {
+				this.#runCallback(ev[i]);
+			}
+		}
 	}
 
 	/**
@@ -72,11 +79,7 @@ class NovyEvent {
 			}
 		}
 
-		if (Reflect.has(cache,'$cb')) {
-			for(let cb of cache.$cb) {
-				cb(...args);
-			}
-		}
+		this.#runCallback(cache,...args);
 
 		return this;
 	}

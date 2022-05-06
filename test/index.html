@@ -3,15 +3,20 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script type="module" src="../src/index.js"></script>
 	<title>Novy Test</title>
 </head>
 <body>
 	<h1 style="float: right;">nb!</h1>
-	<script defer>
+	<script type="module">
+		import * as Novy from '../src/index.js';
+
 		var ee = new Novy.NovyEvent();
 		var r = () => console.log(1);
-		ee.$on('g',r);
+		ee.$on('g.e',r);
+		ee.$emit('g');
+
+		globalThis.ee = ee;
+		globalThis.r = r;
 	</script>
 </body>
 </html>

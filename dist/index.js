@@ -1,5 +1,8 @@
-(function () {
-	'use strict';
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Novy = {}));
+})(this, (function (exports) { 'use strict';
 
 	/**
 	 * @func uuid
@@ -147,19 +150,8 @@
 		}
 	}
 
-	((global) => {
-		/**
-		 * @namespace Novy
-		 */
-		const Novy = {
-			NovyEvent,
-		};
+	exports.NovyEvent = NovyEvent;
 
-		if (global.$) {
-			global.$ = Novy;
-		}
-		
-		global.Novy = Novy;
-	})(globalThis);
+	Object.defineProperty(exports, '__esModule', { value: true });
 
-})();
+}));
