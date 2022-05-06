@@ -1,4 +1,5 @@
-*.config.js*
+build/
 node_modules/
 .npmignore
 devserver.js
+release*
